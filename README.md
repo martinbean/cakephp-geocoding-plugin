@@ -29,23 +29,29 @@ For more information on submodules in Git, read http://git-scm.com/book/en/Git-T
 
 To use the behavior, first enable the plugin in your **/app/Config/bootstrap.php** file by adding the following line to the bottom:
 
-    CakePlugin::load('Geocodable');
+```php
+CakePlugin::load('Geocodable');
+```
 
 Alternatively, you can just use the following if you have many plugins:
 
-    CakePlugin::loadAll();
+```php
+CakePlugin::loadAll();
+```
 
 Then call it in your app’s models:
 
-    <?php
-    class Store extends AppModel {
-        
-        public $name = 'Store';
-        public $actsAs = array(
-            'Geocodable.Geocodable' => array(
-                'latitude_column' => 'latitude',
-                'longitude_column' => 'longitude',
-                'region' => 'uk'
-            )
-        );
-    }
+```php
+<?php
+class Store extends AppModel {
+    
+    public $name = 'Store';
+    public $actsAs = array(
+        'Geocodable.Geocodable' => array(
+            'latitude_column' => 'latitude',
+            'longitude_column' => 'longitude',
+            'region' => 'uk'
+        )
+    );
+}
+```
