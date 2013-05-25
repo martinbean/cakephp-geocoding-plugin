@@ -1,10 +1,6 @@
-# CakePHP Geocodable Behavior
+# CakePHP Geocoder Plugin
 
-This is a simple model behavior plugin that adds latitude and longitude values to your records. This is good for representing physical locations such as stores, venues etc.
-
-## Preparation
-
-Before you use the behavior, you need to add two columns to your database table: `latitude` and `longitude`. These should be of `DECIMAL(10,6)` data type.
+This plugin adds a geocoder controller component and model behavior to your CakePHP application.
 
 ## Installation
 
@@ -12,32 +8,52 @@ To install, either clone this repository or add it add a submodule to your proje
 
 ### Cloning the repository
 
-The simplest way is to clone the respository. The command for this is:
+The simplest way is to clone the repository. The command for this is:
 
-    ~ git clone git@github.com:martinbean/cakephp-geocodable-behavior.git app/Plugin/Geocodable
+    $ git clone git@github.com:martinbean/cakephp-geocoder-plugin.git app/Plugin/Geocoder
 
 ### Adding as a submodule
 
 Alternatively, you can add the behaviour as a submodule to your project if it’s already version-controlled with Git. To do this, run the following commands:
 
-    ~ git submodule add git@github.com:martinbean/cakephp-geocodable-behavior.git app/Plugin/Geocodable
-    ~ git submodule init
+    $ git submodule add git@github.com:martinbean/cakephp-geocoder-plugin.git.git app/Plugin/Geocoder
+    $ git submodule init
 
 For more information on submodules in Git, read http://git-scm.com/book/en/Git-Tools-Submodules.
 
+## Using the Component
+
+You can use the component to geocode addresses within your controllers. A good example is if you need to take a user-submitted value and convert it to a latitude/longitude pair to pass to a model to search it.
+
+To geocode an address in your controllers, simply do something similar to the following:
+
+```php
+<?php
+class StoresController extends AppController {
+    
+    public $components = array(
+        'Geocoder.Geocoder'
+    );
+    
+    public function search() {
+        
+        $location = $this->request->query['location'];
+        
+        $geocodeResult = $this->Geocoder->geocode($location);
+        
+        if (count($geocodeResult) > 0) {
+            $latitude = floatval($geocodeResult[0]->geometry->location->lat);
+            $longitude = floatval($geocodeResult[0]->geometry->location->lng);
+        }
+    }
+}
+```
+
+The component will return a response as a native PHP object from Google’s Geocoding API.
+
 ## Using the Behavior
 
-To use the behavior, first enable the plugin in your **/app/Config/bootstrap.php** file by adding the following line to the bottom:
-
-```php
-CakePlugin::load('Geocodable');
-```
-
-Alternatively, you can just use the following if you have many plugins:
-
-```php
-CakePlugin::loadAll();
-```
+There is also a model behavior. This is useful if saving a record and you want to create a latitude/longitude pair from a field in your model’s data that represents the address, for example a store. Simply attach the behavior to your model:
 
 Then call it in your app’s models:
 
@@ -47,11 +63,47 @@ class Store extends AppModel {
     
     public $name = 'Store';
     public $actsAs = array(
+        'Geocodable.Geocodable'
+    );
+}
+```
+
+### Configuration
+
+By default, the behavior assumes you have two columns in your corresponding database table called `latitude` and `longitude`, and also a column called `address`. These can be changed though. Simply pass an array of options when attaching the behavior:
+
+```php
+<?php
+class Store extends AppModel {
+    
+    public $name = 'Store';
+    public $actsAs = array(
         'Geocodable.Geocodable' => array(
-            'latitude_column' => 'latitude',
-            'longitude_column' => 'longitude',
-            'region' => 'uk'
+            'addressColumn' => 'street_address',
+            'latitudeColumn' => 'lat',
+            'longitude' => 'lng'
         )
     );
 }
 ```
+
+The `addressColumn` key also accepts an array. If you pass an array for the value, then the behavior will go over each items and assemble the address that way. So if you store addresses as their separate components then you could do the following:
+
+```php
+<?php
+class Store extends AppModel {
+    
+    public $name = 'Store';
+    public $actsAs = array(
+        'Geocodable.Geocodable' => array(
+            'addressColumn' => array(
+                'street_address',
+                'locality',
+                'postal_code'
+            )
+        )
+    );
+}
+```
+
+If you have any issues with this plugin then please feel free to create a new [Issue](https://github.com/martinbean/cakephp-geocoding-plugin/issues) on the [GitHub repository](https://github.com/martinbean/cakephp-geocoding-plugin).
