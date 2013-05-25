@@ -3,44 +3,48 @@ App::uses('HttpSocket', 'Network/Http');
 
 class GeocodableBehavior extends ModelBehavior {
     
-    public $settings = array();
-    
     public function setup(Model $Model, $settings = array()) {
         if (!isset($this->settings[$Model->alias])) {
             $this->settings[$Model->alias] = array(
-                'latitude_column' => 'latitude',
-                'longitude_column' => 'longitude',
-                'region' => 'uk'
+                'addressColumn' => 'address',
+                'latitudeColumn' => 'latitude',
+                'longitudeColumn' => 'longitude',
+                'parameters' => array()
             );
         }
         $this->settings[$Model->alias] = array_merge($this->settings[$Model->alias], (array) $settings);
     }
     
+    /**
+     * @todo Throw exception or something if address column is not either an array or a string
+     */
     public function beforeSave(Model $Model) {
-        $address_components = array();
-        if (!is_null($Model->data[$Model->alias]['street_address'])) {
-            $address_components[] = $Model->data[$Model->alias]['street_address'];
-        }
-        if (!is_null($Model->data[$Model->alias]['locality'])) {
-            $address_components[] = $Model->data[$Model->alias]['locality'];
-        }
-        if (!is_null($Model->data[$Model->alias]['postal_code'])) {
-            $address_components[] = $Model->data[$Model->alias]['postal_code'];
-        }
-        $address_string = implode(', ', $address_components);
         
-        $parameters = array(
-            'address' => $address_string,
-            'region' => $this->settings[$Model->alias]['region'],
-            'sensor' => 'false'
-        );
+        $addressColumn = $this->settings[$Model->alias]['addressColumn'];
+        $latitudeColumn = $this->settings[$Model->alias]['latitudeColumn'];
+        $longitudeColumn = $this->settings[$Model->alias]['longitudeColumn'];
+        $parameters = (array) $this->settings[$Model->alias]['parameters'];
+        
+        if (is_string($addressColumn)) {
+            $address = $Model->data[$Model->alias][$addressColumn];
+        }
+        elseif (is_array($addressColumn)) {
+            $address = implode(', ', $Model->data[$Model->alias][$addressColumn]);
+        }
+        
+        $parameters['address'] = $address;
+        $parameters['sensor'] = 'false';
+        
         $http = new HttpSocket();
-        $response = json_decode($http->get('http://maps.googleapis.com/maps/api/geocode/json', $parameters));
+        
+        $response = $http->get('http://maps.googleapis.com/maps/api/geocode/json', $parameters);
+        $response = json_decode($response);
         
         if ($response->status == 'OK') {
-            $Model->data[$Model->alias]['latitude'] = $response->results[0]->geometry->location->lat;
-            $Model->data[$Model->alias]['longitude'] = $response->results[0]->geometry->location->lng;
+            $Model->data[$Model->alias][$latitudeColumn] = floatval($response->results[0]->geometry->location->lat);
+            $Model->data[$Model->alias][$longitudeColumn] = floatval($response->results[0]->geometry->location->lng);
             return true;
         }
+        return false;
     }
 }
