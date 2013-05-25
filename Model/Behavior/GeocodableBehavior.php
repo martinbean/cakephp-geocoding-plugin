@@ -3,6 +3,12 @@ App::uses('HttpSocket', 'Network/Http');
 
 class GeocodableBehavior extends ModelBehavior {
     
+    /**
+     * Sets up the behavior.
+     *
+     * @param Model $Model
+     * @param array $settings
+     */
     public function setup(Model $Model, $settings = array()) {
         if (!isset($this->settings[$Model->alias])) {
             $this->settings[$Model->alias] = array(
@@ -16,6 +22,10 @@ class GeocodableBehavior extends ModelBehavior {
     }
     
     /**
+     * Before save callback.
+     *
+     * @param Model $model
+     * @return boolean
      * @todo Throw exception or something if address column is not either an array or a string
      */
     public function beforeSave(Model $Model) {
