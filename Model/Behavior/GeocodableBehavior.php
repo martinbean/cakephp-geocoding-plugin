@@ -36,10 +36,16 @@ class GeocodableBehavior extends ModelBehavior {
         $parameters = (array) $this->settings[$Model->alias]['parameters'];
         
         if (is_array($addressColumn)) {
-            $address = implode(', ', $addressColumn);
+            $address = array();
+            foreach ($addressColumn as $column) {
+                if (!empty($Model->data[$Model->alias][$column])) {
+                    $address[] = $Model->data[$Model->alias][$column]; 
+                }
+            }
+            $address = implode(', ', $address);
         }
         else {
-            $address = $addressColumn;
+            $address = $Model->data[$Model->alias][$addressColumn];
         }
         
         $parameters['address'] = $address;
