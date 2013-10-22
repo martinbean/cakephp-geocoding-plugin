@@ -28,7 +28,7 @@ class GeocodableBehavior extends ModelBehavior {
      * @return boolean
      * @todo Throw exception or something if address column is not either an array or a string
      */
-    public function beforeSave(Model $Model) {
+    public function beforeSave(Model $Model, $options = array()) {
         
         $addressColumn = $this->settings[$Model->alias]['addressColumn'];
         $latitudeColumn = $this->settings[$Model->alias]['latitudeColumn'];
