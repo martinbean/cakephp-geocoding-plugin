@@ -63,7 +63,7 @@ class Store extends AppModel {
     
     public $name = 'Store';
     public $actsAs = array(
-        'Geocodable.Geocodable'
+        'Geocoder.Geocodable'
     );
 }
 ```
@@ -78,7 +78,7 @@ class Store extends AppModel {
     
     public $name = 'Store';
     public $actsAs = array(
-        'Geocodable.Geocodable' => array(
+        'Geocoder.Geocodable' => array(
             'addressColumn' => 'street_address',
             'latitudeColumn' => 'lat',
             'longitude' => 'lng'
@@ -95,7 +95,7 @@ class Store extends AppModel {
     
     public $name = 'Store';
     public $actsAs = array(
-        'Geocodable.Geocodable' => array(
+        'Geocoder.Geocodable' => array(
             'addressColumn' => array(
                 'street_address',
                 'locality',
