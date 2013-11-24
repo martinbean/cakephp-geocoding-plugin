@@ -16,10 +16,21 @@ The simplest way is to clone the repository. The command for this is:
 
 Alternatively, you can add the behaviour as a submodule to your project if it’s already version-controlled with Git. To do this, run the following commands:
 
-    $ git submodule add git@github.com:martinbean/cakephp-geocoder-plugin.git.git app/Plugin/Geocoder
+    $ git submodule add git@github.com:martinbean/cakephp-geocoding-plugin.git.git app/Plugin/Geocoding
     $ git submodule init
 
-For more information on submodules in Git, read http://git-scm.com/book/en/Git-Tools-Submodules.
+Once you have cloned/added the plugin as a submodule, you then need to enable it in your CakePHP application.
+Add the following line to your **app/Config/bootstrap.php** file:
+
+```php
+CakePlugin::load('Geocoding');
+```
+
+Alternatively, you can just use the following if you have many plugins:
+
+```php
+CakePlugin::loadAll();
+```
 
 ## Using the Component
 
@@ -81,7 +92,7 @@ class Store extends AppModel {
         'Geocoder.Geocodable' => array(
             'addressColumn' => 'street_address',
             'latitudeColumn' => 'lat',
-            'longitude' => 'lng'
+            'longitudeColumn' => 'lng'
         )
     );
 }
