@@ -61,6 +61,15 @@ class GeocodableBehavior extends ModelBehavior {
             $Model->data[$Model->alias][$longitudeColumn] = floatval($response->results[0]->geometry->location->lng);
             return true;
         }
-        return false;
+        else {
+            $addressColumn = $this->settings[$Model->alias]['addressColumn'];
+            if (is_array($addressColumn)) {
+                $addressColumn = $addressColumn[0];
+            }
+            $Model->data[$Model->alias][$addressColumn] = array(
+                'Could not geocode address'
+            );
+            return false;
+        }
     }
 }
