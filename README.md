@@ -16,7 +16,7 @@ The simplest way is to clone the repository. The command for this is:
 
 Alternatively, you can add the behaviour as a submodule to your project if it’s already version-controlled with Git. To do this, run the following commands:
 
-    $ git submodule add git@github.com:martinbean/cakephp-geocoding-plugin.git.git app/Plugin/Geocoding
+    $ git submodule add git@github.com:martinbean/cakephp-geocoding-plugin.git app/Plugin/Geocoder
     $ git submodule init
 
 Once you have cloned/added the plugin as a submodule, you then need to enable it in your CakePHP application.
