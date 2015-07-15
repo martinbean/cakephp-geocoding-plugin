@@ -23,7 +23,7 @@ Once you have cloned/added the plugin as a submodule, you then need to enable it
 Add the following line to your **app/Config/bootstrap.php** file:
 
 ```php
-CakePlugin::load('Geocoding');
+CakePlugin::load('Geocoder');
 ```
 
 Alternatively, you can just use the following if you have many plugins:
@@ -41,17 +41,17 @@ To geocode an address in your controllers, simply do something similar to the fo
 ```php
 <?php
 class StoresController extends AppController {
-    
+
     public $components = array(
         'Geocoder.Geocoder'
     );
-    
+
     public function search() {
-        
+
         $location = $this->request->query['location'];
-        
+
         $geocodeResult = $this->Geocoder->geocode($location);
-        
+
         if (count($geocodeResult) > 0) {
             $latitude = floatval($geocodeResult[0]->geometry->location->lat);
             $longitude = floatval($geocodeResult[0]->geometry->location->lng);
@@ -71,7 +71,7 @@ Then call it in your app’s models:
 ```php
 <?php
 class Store extends AppModel {
-    
+
     public $name = 'Store';
     public $actsAs = array(
         'Geocoder.Geocodable'
@@ -86,7 +86,7 @@ By default, the behavior assumes you have two columns in your corresponding data
 ```php
 <?php
 class Store extends AppModel {
-    
+
     public $name = 'Store';
     public $actsAs = array(
         'Geocoder.Geocodable' => array(
@@ -103,7 +103,7 @@ The `addressColumn` key also accepts an array. If you pass an array for the valu
 ```php
 <?php
 class Store extends AppModel {
-    
+
     public $name = 'Store';
     public $actsAs = array(
         'Geocoder.Geocodable' => array(
